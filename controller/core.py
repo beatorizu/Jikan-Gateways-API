@@ -1,4 +1,3 @@
-import requests
 from urllib.parse import urlencode
 
 
@@ -6,8 +5,11 @@ class JikanGatewaysAPI(object):
 
     URL = 'https://api.jikan.moe/'
 
+    def __init__(self, client_http):
+        self.client = client_http
+
     def search_data(self):
-        return requests.get(self.URL)
+        return self.client.get(self.URL)
 
     def search_character(self, name):
         resource = 'search/character?'
@@ -17,4 +19,4 @@ class JikanGatewaysAPI(object):
 
         full_url = f'{self.URL}{resource}{query_string}'
 
-        return requests.get(full_url)
+        return self.client.get(full_url)
