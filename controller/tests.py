@@ -1,6 +1,6 @@
 import requests
 from unittest import mock, TestCase
-from controller.core import JikanGatewaysAPI
+from controller.core import CharacterNotFoundException, JikanGatewaysAPI
 
 
 class JikanGatewaysAPITest(TestCase):
@@ -39,3 +39,18 @@ class JikanGatewaysAPITest(TestCase):
         self.client.get.assert_called_with(
             'https://api.jikan.moe/search/character?q=Ryuuji+Suguro'
         )
+
+    def test_not_found_character(self):
+        json_response = {
+            'error': 'File does not exist'
+        }
+
+        mock_response = mock.Mock(status_code=404)
+        mock_response.json.return_value = json_response
+        self.client.get.return_value = mock_response
+
+        with self.assertRaises(CharacterNotFoundException) as context:
+            self.jikan_data.search_character(name='Chapolin')
+
+        self.assertEqual('Character Chapolin not found.',
+                         context.exception.message)

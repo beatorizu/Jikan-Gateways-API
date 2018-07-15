@@ -1,4 +1,5 @@
 from urllib.parse import urlencode
+from controller.exceptions import CharacterNotFoundException
 
 
 class JikanGatewaysAPI(object):
@@ -19,4 +20,9 @@ class JikanGatewaysAPI(object):
 
         full_url = f'{self.URL}{resource}{query_string}'
 
-        return self.client.get(full_url)
+        response = self.client.get(full_url)
+
+        # Not Found
+        if response.status_code == 404:
+            raise CharacterNotFoundException(name)
+        return response
