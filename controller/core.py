@@ -1,5 +1,6 @@
 from urllib.parse import urlencode
-from controller.exceptions import CharacterNotFoundException
+from controller.exceptions import (CharacterNotFoundException,
+                                   ServiceUnavailable)
 
 
 class JikanGatewaysAPI(object):
@@ -25,4 +26,7 @@ class JikanGatewaysAPI(object):
         # Not Found
         if response.status_code == 404:
             raise CharacterNotFoundException(name)
+        # Service Unavailable
+        elif response.status_code == 503:
+            raise ServiceUnavailable()
         return response
