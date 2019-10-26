@@ -2,6 +2,12 @@ from urllib.parse import urlencode
 from controller.exceptions import (CharacterNotFoundException,
                                    ServiceUnavailable)
 
+from matplotlib.pyplot import imshow
+import numpy as np
+from PIL import Image
+from io import BytesIO
+
+
 
 class JikanGatewaysAPI(object):
 
@@ -56,3 +62,16 @@ class JikanGatewaysAPI(object):
             raise ServiceUnavailable()
 
         return response
+
+class ImageViewer:
+    def __init__(self,image,client_http):
+        self.image = image
+        self.client = client_http
+    
+    def print_picture(self):
+        response = self.client.get(self.image)
+
+        image = Image.open(BytesIO(response.content))
+        image.show()
+
+        
