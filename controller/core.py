@@ -34,3 +34,25 @@ class JikanGatewaysAPI(object):
             raise ServiceUnavailable()
 
         return response
+
+    def search_anime(self, name):
+        resource = 'v3/search/anime?'
+
+        # traduz nosso dicionário python nos parametros de busca HTTP
+        query_string = urlencode({'q': name})
+
+        full_url = f'{self.URL}{resource}{query_string}'
+
+        print(full_url)
+
+        response = self.client.get(full_url)
+
+
+        # Not Found
+        if response.status_code == 404:
+            raise CharacterNotFoundException(name)
+        # Service Unavailable
+        elif response.status_code == 503:
+            raise ServiceUnavailable()
+
+        return response
