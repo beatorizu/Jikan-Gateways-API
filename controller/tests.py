@@ -31,6 +31,8 @@ class JikanGatewaysAPITest(TestCase):
         self.client.get.return_value = mock_response
 
         response = self.jikan_data.search_character(name='Ryuuji Suguro')
+        print(response.text)
+
 
         content = response.json()
 
