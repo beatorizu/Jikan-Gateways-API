@@ -1,5 +1,6 @@
 from controller.core import JikanGatewaysAPI, ImageViewer
 from model.character import Character
+from model.manga import Manga
 from model.anime import Anime
 import requests
 
@@ -11,7 +12,14 @@ all_anime = list()
 for anime in s.search_anime('Boku No Hero').json().get('results'):
     all_anime.append(Anime(anime))
 
+
+all_manga = list()
+for manga in s.search_manga('Boku No Hero').json().get('results'):
+    all_manga.append(Manga(manga))
+
+
 print(all_char[0].image_url)
 img = ImageViewer(all_char[0].image_url,requests)
-img.print_picture()
 print(all_anime[0].title)
+print(all_manga[0].title)
+img.print_picture()
