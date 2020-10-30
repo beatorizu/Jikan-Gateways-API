@@ -19,6 +19,13 @@ class AnimeNotFoundException(Exception):
         super(AnimeNotFoundException, self).__init__(self.message)
 
 
+class SeasonNotFoundException(Exception):
+
+    def __init__(self, year, season):
+        self.message = f'Year {year}, Season {season} not found.'
+        super(SeasonNotFoundException, self).__init__(self.message)
+
+
 class PersonNotFoundException(Exception):
 
     def __init__(self, name):
