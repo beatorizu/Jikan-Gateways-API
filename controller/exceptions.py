@@ -28,3 +28,10 @@ class AnimeNotFoundException(Exception):
         self.message = f'Anime {name} not found.'
         super(AnimeNotFoundException, self).__init__(self.message)
 
+
+class PersonNotFoundException(Exception):
+
+    def __init__(self, name):
+        self.message = f'Person {name} not found.'
+        super(PersonNotFoundException, self).__init__(self.message)
+

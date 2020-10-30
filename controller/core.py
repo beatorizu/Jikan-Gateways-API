@@ -32,7 +32,6 @@ class JikanGatewaysAPI(object):
 
         response = self.client.get(full_url)
 
-
         # Not Found
         if response.status_code == 404:
             raise CharacterNotFoundException(name)
@@ -54,7 +53,6 @@ class JikanGatewaysAPI(object):
 
         response = self.client.get(full_url)
 
-
         # Not Found
         if response.status_code == 404:
             raise AnimeNotFoundException(name)
@@ -64,31 +62,75 @@ class JikanGatewaysAPI(object):
 
         return response
 
-
     def search_manga(self, name):
-            resource = 'v3/search/manga?'
+        resource = 'v3/search/manga?'
 
-            # traduz nosso dicionário python nos parametros de busca HTTP
-            query_string = urlencode({'q': name})
+        # traduz nosso dicionário python nos parametros de busca HTTP
+        query_string = urlencode({'q': name})
 
-            full_url = f'{self.URL}{resource}{query_string}'
+        full_url = f'{self.URL}{resource}{query_string}'
 
-            print(full_url)
+        print(full_url)
 
-            response = self.client.get(full_url)
+        response = self.client.get(full_url)
 
+        # Not Found
+        if response.status_code == 404:
+            raise MangaNotFoundException(name)
+        # Service Unavailable
+        elif response.status_code == 503:
+            raise ServiceUnavailable()
 
-            # Not Found
-            if response.status_code == 404:
-                raise MangaNotFoundException(name)
-            # Service Unavailable
-            elif response.status_code == 503:
-                raise ServiceUnavailable()
+        return response
 
-            return response
+    def delete_unused_entries(self, item):
+        unused_entries = ['request_hash', 'request_cached', 'request_cache_expiry', 'url',
+                          'image_url', 'website_url', 'anime_staff_positions']
+
+        for entries in unused_entries:
+            item.pop(entries, None)
+
+        return item
+
+    def search_person_works(self, name):
+        resource = 'v3/search/people?'
+
+        # traduz nosso dicionário python nos parametros de busca HTTP
+        query_string = urlencode({'q': name})
+
+        full_url = f'{self.URL}{resource}{query_string}'
+
+        response = self.client.get(full_url)
+        print(full_url)
+
+        # Not Found
+        if response.status_code == 404:
+            raise MangaNotFoundException(name)
+        # Service Unavailable
+        elif response.status_code == 503:
+            raise ServiceUnavailable()
+
+        response = response.json()
+
+        all_persons_id = list()
+
+        for p in response.get('results'):
+            all_persons_id.append(p.get('mal_id'))
+
+        results = list()
+        resource = 'v3/person/'
+
+        for person in all_persons_id:
+            full_url = f'{self.URL}{resource}{person}'
+            rs = self.client.get(full_url).json()
+            rs = self.delete_unused_entries(rs)
+            results.append(rs)
+
+        return results
+
 
 class ImageViewer:
-    def __init__(self,image,client_http):
+    def __init__(self, image, client_http):
         self.image = image
         self.client = client_http
 
@@ -97,5 +139,3 @@ class ImageViewer:
 
         image = Image.open(BytesIO(response.content))
         image.show()
-
-

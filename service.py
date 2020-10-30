@@ -17,7 +17,8 @@ all_manga = list()
 for manga in s.search_manga('Boku No Hero').json().get('results'):
     all_manga.append(Manga(manga))
 
-
+works = s.search_person_works("junichi")
+print(works)
 print(all_char[0].image_url)
 img = ImageViewer(all_char[0].image_url,requests)
 print(all_anime[0].title)
