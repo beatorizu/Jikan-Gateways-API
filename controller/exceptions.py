@@ -10,11 +10,13 @@ class MangaNotFoundException(Exception):
         self.message = f'Manga {name} not found.'
         super(MangaNotFoundException, self).__init__(self.message)
 
+
 class AnimeNotFoundException(Exception):
 
     def __init__(self, name):
         self.message = f'Anime {name} not found.'
         super(AnimeNotFoundException, self).__init__(self.message)
+
 
 class ServiceUnavailable(Exception):
 
@@ -22,9 +24,10 @@ class ServiceUnavailable(Exception):
         self.message = 'Service Unavailable.'
         super(ServiceUnavailable, self).__init__(self.message)
 
-class AnimeNotFoundException(Exception):
 
-    def __init__(self, name):
-        self.message = f'Anime {name} not found.'
-        super(AnimeNotFoundException, self).__init__(self.message)
+class TopNotFoundException(Exception):
+
+    def __init__(self):
+        self.message = f'Top of this type not found.'
+        super(TopNotFoundException, self).__init__(self.message)
 
