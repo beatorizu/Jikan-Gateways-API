@@ -1,3 +1,4 @@
+from controller.static import TYPE_GENRE
 from urllib.parse import urlencode
 from controller.exceptions import (CharacterNotFoundException,
                                    AnimeNotFoundException,
@@ -22,6 +23,7 @@ class JikanGatewaysAPI(object):
 
     def search_character(self, name):
         resource = 'v3/search/character?'
+        
 
         # traduz nosso dicionário python nos parametros de busca HTTP
         query_string = urlencode({'q': name})
@@ -42,11 +44,22 @@ class JikanGatewaysAPI(object):
 
         return response
 
-    def search_anime(self, name):
+    def search_anime(self, name, genre=None):
         resource = 'v3/search/anime?'
+        genre_id = TYPE_GENRE['anime']
+
+        params = {"q": name}
+
+        if genre is not None:
+            if str(genre).isdigit():
+                params.update({"genre": genre})
+            else:
+                genre = genre_id.get(genre,None)
+
+
 
         # traduz nosso dicionário python nos parametros de busca HTTP
-        query_string = urlencode({'q': name})
+        query_string = urlencode(params)
 
         full_url = f'{self.URL}{resource}{query_string}'
 
@@ -65,30 +78,41 @@ class JikanGatewaysAPI(object):
         return response
 
 
-    def search_manga(self, name):
-            resource = 'v3/search/manga?'
+    def search_manga(self, name, genre=None):
+        resource = 'v3/search/manga?'
+        genre_id = TYPE_GENRE['manga']
 
-            # traduz nosso dicionário python nos parametros de busca HTTP
-            query_string = urlencode({'q': name})
+        params = {"q": name}
 
-            full_url = f'{self.URL}{resource}{query_string}'
+        if genre is not None:
+            if str(genre).isdigit():
+                params.update({"genre": genre})
+            else:
+                genre = genre_id.get(genre,None)
 
-            print(full_url)
 
-            response = self.client.get(full_url)
+        # traduz nosso dicionário python nos parametros de busca HTTP
+        query_string = urlencode(params)
+
+        full_url = f'{self.URL}{resource}{query_string}'
+
+        print(full_url)
+
+        response = self.client.get(full_url)
 
 
-            # Not Found
-            if response.status_code == 404:
-                raise MangaNotFoundException(name)
-            # Service Unavailable
-            elif response.status_code == 503:
-                raise ServiceUnavailable()
+        # Not Found
+        if response.status_code == 404:
+            raise MangaNotFoundException(name)
+        # Service Unavailable
+        elif response.status_code == 503:
+            raise ServiceUnavailable()
 
-            return response
+        return response
+
 
 class ImageViewer:
-    def __init__(self,image,client_http):
+    def __init__(self, image, client_http):
         self.image = image
         self.client = client_http
 
