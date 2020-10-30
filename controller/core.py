@@ -1,13 +1,14 @@
-from urllib.parse import urlencode
-from controller.exceptions import (CharacterNotFoundException,
-                                   AnimeNotFoundException,
-                                   MangaNotFoundException,
-                                   ServiceUnavailable)
-
-from matplotlib.pyplot import imshow
-import numpy as np
-from PIL import Image
 from io import BytesIO
+from tkinter import Button, Label, Tk
+from urllib.parse import urlencode
+
+import numpy as np
+from matplotlib.pyplot import imshow
+from PIL import Image, ImageTk
+
+from controller.exceptions import (AnimeNotFoundException,
+                                   CharacterNotFoundException,
+                                   MangaNotFoundException, ServiceUnavailable)
 
 
 class JikanGatewaysAPI(object):
@@ -98,4 +99,20 @@ class ImageViewer:
         image = Image.open(BytesIO(response.content))
         image.show()
 
+    def image_viewer(self):
 
+        response = self.client.get(self.image)
+
+        image = Image.open(BytesIO(response.content))
+        width, height = image.size
+        root = Tk() 
+        root.title("Image Viewer") 
+        root.geometry(f"{width}x{height+35}") 
+        image = ImageTk.PhotoImage(image)
+
+        label = Label(image=image)
+        label.grid(row=1, column=0, columnspan=3) 
+        button_exit = Button(root, text="Exit", command=root.quit) 
+        button_exit.grid(row=5, column=1) 
+
+        root.mainloop() 
