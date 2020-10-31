@@ -123,6 +123,46 @@ class JikanGatewaysAPI(object):
         elif response.status_code == 503:
             raise ServiceUnavailable()
 
+    def search_manga(self, name):
+        resource = 'v3/search/manga?'
+
+        # traduz nosso dicionário python nos parametros de busca HTTP
+        query_string = urlencode({'q': name})
+
+        full_url = f'{self.URL}{resource}{query_string}'
+
+        print(full_url)
+
+        response = self.client.get(full_url)
+
+        # Not Found
+        if response.status_code == 404:
+            raise MangaNotFoundException(name)
+        # Service Unavailable
+        elif response.status_code == 503:
+            raise ServiceUnavailable()
+
+        return response
+
+    def search_person(self, name):
+        resource = 'v3/search/people?'
+
+        # traduz nosso dicionário python nos parametros de busca HTTP
+        query_string = urlencode({'q': name})
+
+        full_url = f'{self.URL}{resource}{query_string}'
+
+        print(full_url)
+
+        response = self.client.get(full_url)
+
+        # Not Found
+        if response.status_code == 404:
+            raise PersonNotFoundException(name)
+        # Service Unavailable
+        elif response.status_code == 503:
+            raise ServiceUnavailable()
+
         return response
 
 
