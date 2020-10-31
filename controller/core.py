@@ -2,10 +2,9 @@ from urllib.parse import urlencode
 from controller.exceptions import (CharacterNotFoundException,
                                    AnimeNotFoundException,
                                    MangaNotFoundException,
+                                   PersonNotFoundException,
                                    ServiceUnavailable)
 
-from matplotlib.pyplot import imshow
-import numpy as np
 from PIL import Image
 from io import BytesIO
 
@@ -32,7 +31,6 @@ class JikanGatewaysAPI(object):
 
         response = self.client.get(full_url)
 
-
         # Not Found
         if response.status_code == 404:
             raise CharacterNotFoundException(name)
@@ -42,7 +40,7 @@ class JikanGatewaysAPI(object):
 
         return response
 
-    def search_anime(self, name):
+    def search_anime(self, name,):
         resource = 'v3/search/anime?'
 
         # traduz nosso dicionário python nos parametros de busca HTTP
@@ -54,7 +52,6 @@ class JikanGatewaysAPI(object):
 
         response = self.client.get(full_url)
 
-
         # Not Found
         if response.status_code == 404:
             raise AnimeNotFoundException(name)
@@ -64,31 +61,51 @@ class JikanGatewaysAPI(object):
 
         return response
 
-
     def search_manga(self, name):
-            resource = 'v3/search/manga?'
+        resource = 'v3/search/manga?'
 
-            # traduz nosso dicionário python nos parametros de busca HTTP
-            query_string = urlencode({'q': name})
+        # traduz nosso dicionário python nos parametros de busca HTTP
+        query_string = urlencode({'q': name})
 
-            full_url = f'{self.URL}{resource}{query_string}'
+        full_url = f'{self.URL}{resource}{query_string}'
 
-            print(full_url)
+        print(full_url)
 
-            response = self.client.get(full_url)
+        response = self.client.get(full_url)
 
+        # Not Found
+        if response.status_code == 404:
+            raise MangaNotFoundException(name)
+        # Service Unavailable
+        elif response.status_code == 503:
+            raise ServiceUnavailable()
 
-            # Not Found
-            if response.status_code == 404:
-                raise MangaNotFoundException(name)
-            # Service Unavailable
-            elif response.status_code == 503:
-                raise ServiceUnavailable()
+        return response
 
-            return response
+    def search_person(self, name):
+        resource = 'v3/search/people?'
+
+        # traduz nosso dicionário python nos parametros de busca HTTP
+        query_string = urlencode({'q': name})
+
+        full_url = f'{self.URL}{resource}{query_string}'
+
+        print(full_url)
+
+        response = self.client.get(full_url)
+
+        # Not Found
+        if response.status_code == 404:
+            raise PersonNotFoundException(name)
+        # Service Unavailable
+        elif response.status_code == 503:
+            raise ServiceUnavailable()
+
+        return response
+
 
 class ImageViewer:
-    def __init__(self,image,client_http):
+    def __init__(self, image, client_http):
         self.image = image
         self.client = client_http
 
@@ -97,5 +114,3 @@ class ImageViewer:
 
         image = Image.open(BytesIO(response.content))
         image.show()
-
-
