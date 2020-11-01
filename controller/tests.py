@@ -2,6 +2,7 @@ import requests
 from unittest import mock, TestCase
 from controller.core import (CharacterNotFoundException,
                              AnimeNotFoundException,
+                             SeasonNotFoundException,
                              MangaNotFoundException,
                              PersonNotFoundException,
                              ServiceUnavailable,
@@ -98,6 +99,48 @@ class JikanGatewaysAPITest(TestCase):
             self.jikan_data.search_anime(name='The Smurfs')
 
         self.assertEqual('Anime The Smurfs not found.',
+                         context.exception.message)
+
+    def test_list_anime_of_season(self):
+        # dicionário com a estrutura básica da resposta da api
+        json_response = {
+            'anime': [
+                {
+                    'title': 'Violet Evergarden',
+                    'episodes': 13
+                }
+            ]
+        }
+
+        mock_response = mock.Mock(status_code=200)
+        mock_response.json.return_value = json_response
+        self.client.get.return_value = mock_response
+
+        response = self.jikan_data.list_animes_from_season(year=2018, season='winter')
+        print(response.text)
+
+        content = response.json()
+
+        self.assertEqual('Violet Evergarden', content['anime'][0]['title'])
+
+        # verificando a URL da chamada get
+        self.client.get.assert_called_with(
+            'https://api.jikan.moe/v3/season/2018/winter'
+        )
+
+    def test_not_found_anime_of_season(self):
+        json_response = {
+            'error': 'File does not exist'
+        }
+
+        mock_response = mock.Mock(status_code=404)
+        mock_response.json.return_value = json_response
+        self.client.get.return_value = mock_response
+
+        with self.assertRaises(SeasonNotFoundException) as context:
+            self.jikan_data.list_animes_from_season(year=2018, season=2)
+
+        self.assertEqual('Year 2018, Season 2 not found.',
                          context.exception.message)
 
     def test_search_manga(self):
