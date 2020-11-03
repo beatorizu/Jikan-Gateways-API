@@ -19,7 +19,14 @@ class AnimeNotFoundException(Exception):
         super(AnimeNotFoundException, self).__init__(self.message)
 
 
-class SeasonNotFoundException(Exception):
+
+
+
+class TopNotFoundException(Exception):
+
+    def __init__(self):
+        self.message = f'Top of this type not found.'
+        super(TopNotFoundException, self).__init__(self.message)
 
     def __init__(self, year, season):
         self.message = f'Year {year}, Season {season} not found.'
@@ -34,6 +41,14 @@ class PersonNotFoundException(Exception):
 
 
 class ServiceUnavailable(Exception):
+
+
+class PersonNotFoundException(Exception):
+
+    def __init__(self, name):
+        self.message = f'Person {name} not found.'
+        super(PersonNotFoundException, self).__init__(self.message)
+
 
     def __init__(self):
         self.message = 'Service Unavailable.'
