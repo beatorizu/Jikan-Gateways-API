@@ -2,6 +2,7 @@ from urllib.parse import urlencode
 from controller.exceptions import (CharacterNotFoundException,
                                    AnimeNotFoundException,
                                    MangaNotFoundException,
+                                   TopNotFoundException,
                                    PersonNotFoundException,
                                    SeasonNotFoundException,
                                    ServiceUnavailable)
@@ -212,6 +213,25 @@ class JikanGatewaysAPI(object):
 
         return response
 
+
+    def get_top_mal(self, top_type):
+        resource = 'v3/top/'
+
+        # traduz nosso dicionário python nos parametros de busca HTTP
+
+        full_url = f'{self.URL}{resource}{top_type}'
+
+        print(full_url)
+
+        response = self.client.get(full_url)
+        # Not Found
+        if response.status_code == 404 or response.status_code == 400:
+            raise TopNotFoundException()
+        # Service Unavailable
+        elif response.status_code == 503:
+            raise ServiceUnavailable()
+
+        return response
 
 class ImageViewer:
     def __init__(self, image, client_http):

@@ -19,7 +19,14 @@ class AnimeNotFoundException(Exception):
         super(AnimeNotFoundException, self).__init__(self.message)
 
 
-class SeasonNotFoundException(Exception):
+
+
+
+class TopNotFoundException(Exception):
+
+    def __init__(self):
+        self.message = f'Top of this type not found.'
+        super(TopNotFoundException, self).__init__(self.message)
 
     def __init__(self, year, season):
         self.message = f'Year {year}, Season {season} not found.'
