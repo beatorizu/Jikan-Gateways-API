@@ -62,6 +62,7 @@ class JikanGatewaysAPI(object):
 
         return response
 
+
     def list_animes_from_season(self, year, season):
         resource = 'v3/season/'
 
@@ -143,6 +144,52 @@ class JikanGatewaysAPI(object):
             raise ServiceUnavailable()
 
         return response
+
+    def delete_unused_entries(self, item):
+        unused_entries = ['request_hash', 'request_cached', 'request_cache_expiry', 'url',
+                          'image_url', 'website_url', 'anime_staff_positions']
+
+        for entries in unused_entries:
+            item.pop(entries, None)
+
+        return item
+
+    def search_person_works(self, name):
+        resource = 'v3/search/people?'
+
+        # traduz nosso dicionário python nos parametros de busca HTTP
+        query_string = urlencode({'q': name})
+
+        full_url = f'{self.URL}{resource}{query_string}'
+
+        response = self.client.get(full_url)
+        print(full_url)
+
+        # Not Found
+        if response.status_code == 404:
+            raise MangaNotFoundException(name)
+        # Service Unavailable
+        elif response.status_code == 503:
+            raise ServiceUnavailable()
+
+        response = response.json()
+
+        all_persons_id = list()
+
+        for p in response.get('results'):
+            all_persons_id.append(p.get('mal_id'))
+
+        results = list()
+        resource = 'v3/person/'
+
+        for person in all_persons_id:
+            full_url = f'{self.URL}{resource}{person}'
+            rs = self.client.get(full_url).json()
+            rs = self.delete_unused_entries(rs)
+            results.append(rs)
+
+        return results
+
 
     def search_person(self, name):
         resource = 'v3/search/people?'

@@ -35,6 +35,14 @@ class PersonNotFoundException(Exception):
 
 class ServiceUnavailable(Exception):
 
+
+class PersonNotFoundException(Exception):
+
+    def __init__(self, name):
+        self.message = f'Person {name} not found.'
+        super(PersonNotFoundException, self).__init__(self.message)
+
+
     def __init__(self):
         self.message = 'Service Unavailable.'
         super(ServiceUnavailable, self).__init__(self.message)
