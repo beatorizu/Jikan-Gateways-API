@@ -1,3 +1,4 @@
+from controller.static import TYPE_GENRE
 from urllib.parse import urlencode
 from controller.exceptions import (CharacterNotFoundException,
                                    AnimeNotFoundException,
@@ -23,6 +24,7 @@ class JikanGatewaysAPI(object):
 
     def search_character(self, name):
         resource = 'v3/search/character?'
+        
 
         # traduz nosso dicionário python nos parametros de busca HTTP
         query_string = urlencode({'q': name})
@@ -42,11 +44,23 @@ class JikanGatewaysAPI(object):
 
         return response
 
-    def search_anime(self, name,):
+    def search_anime(self, name, genre=None):
+
         resource = 'v3/search/anime?'
+        genre_id = TYPE_GENRE['anime']
+
+        params = {"q": name}
+
+        if genre is not None:
+            if str(genre).isdigit():
+                params.update({"genre": genre})
+            else:
+                genre = genre_id.get(genre,None)
+
+
 
         # traduz nosso dicionário python nos parametros de busca HTTP
-        query_string = urlencode({'q': name})
+        query_string = urlencode(params)
 
         full_url = f'{self.URL}{resource}{query_string}'
 
@@ -125,11 +139,21 @@ class JikanGatewaysAPI(object):
         elif response.status_code == 503:
             raise ServiceUnavailable()
 
-    def search_manga(self, name):
+    def search_manga(self, name, genre=None):
         resource = 'v3/search/manga?'
+        genre_id = TYPE_GENRE['manga']
+
+        params = {"q": name}
+
+        if genre is not None:
+            if str(genre).isdigit():
+                params.update({"genre": genre})
+            else:
+                genre = genre_id.get(genre,None)
+
 
         # traduz nosso dicionário python nos parametros de busca HTTP
-        query_string = urlencode({'q': name})
+        query_string = urlencode(params)
 
         full_url = f'{self.URL}{resource}{query_string}'
 
@@ -137,14 +161,12 @@ class JikanGatewaysAPI(object):
 
         response = self.client.get(full_url)
 
+
         # Not Found
         if response.status_code == 404:
             raise MangaNotFoundException(name)
-        # Service Unavailable
-        elif response.status_code == 503:
-            raise ServiceUnavailable()
 
-        return response
+    
 
     def delete_unused_entries(self, item):
         unused_entries = ['request_hash', 'request_cached', 'request_cache_expiry', 'url',
