@@ -33,6 +33,13 @@ class PersonNotFoundException(Exception):
         super(PersonNotFoundException, self).__init__(self.message)
 
 
+class TopNotFoundException(Exception):
+
+    def __init__(self):
+        self.message = 'Top of this type not found.'
+        super(TopNotFoundException, self).__init__(self.message)
+
+
 class ServiceUnavailable(Exception):
 
     def __init__(self):

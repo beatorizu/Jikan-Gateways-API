@@ -22,6 +22,8 @@ all_anime_of_season = list()
 for anime in s.list_animes_from_season(2018, 'winter').json().get('anime'):
     all_anime_of_season.append(Anime(anime))
 
+works = s.search_person_works("junichi")
+print(works)
 print(all_char[0].image_url)
 img = ImageViewer(all_char[0].image_url, requests)
 print(all_anime[0].title)
