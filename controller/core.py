@@ -2,10 +2,10 @@ from urllib.parse import urlencode
 from controller.exceptions import (CharacterNotFoundException,
                                    AnimeNotFoundException,
                                    MangaNotFoundException,
+                                   PersonNotFoundException,
+                                   SeasonNotFoundException,
                                    ServiceUnavailable)
 
-from matplotlib.pyplot import imshow
-import numpy as np
 from PIL import Image
 from io import BytesIO
 
@@ -41,7 +41,7 @@ class JikanGatewaysAPI(object):
 
         return response
 
-    def search_anime(self, name):
+    def search_anime(self, name,):
         resource = 'v3/search/anime?'
 
         # traduz nosso dicionário python nos parametros de busca HTTP
@@ -61,6 +61,68 @@ class JikanGatewaysAPI(object):
             raise ServiceUnavailable()
 
         return response
+
+
+    def list_animes_from_season(self, year, season):
+        resource = 'v3/season/'
+
+        # traduz nosso dicionário python nos parametros de busca HTTP
+        query_string = f'{year}/{season}'
+
+        full_url = f'{self.URL}{resource}{query_string}'
+
+        print(full_url)
+
+        response = self.client.get(full_url)
+
+        # Not Found
+        if response.status_code == 404:
+            raise SeasonNotFoundException(year, season)
+        # Service Unavailable
+        elif response.status_code == 503:
+            raise ServiceUnavailable()
+
+        return response
+
+    def search_manga(self, name):
+        resource = 'v3/search/manga?'
+
+        # traduz nosso dicionário python nos parametros de busca HTTP
+        query_string = urlencode({'q': name})
+
+        full_url = f'{self.URL}{resource}{query_string}'
+
+        print(full_url)
+
+        response = self.client.get(full_url)
+
+        # Not Found
+        if response.status_code == 404:
+            raise MangaNotFoundException(name)
+        # Service Unavailable
+        elif response.status_code == 503:
+            raise ServiceUnavailable()
+
+        return response
+
+    def search_person(self, name):
+        resource = 'v3/search/people?'
+
+        # traduz nosso dicionário python nos parametros de busca HTTP
+        query_string = urlencode({'q': name})
+
+        full_url = f'{self.URL}{resource}{query_string}'
+
+        print(full_url)
+
+        response = self.client.get(full_url)
+
+        # Not Found
+        if response.status_code == 404:
+            raise PersonNotFoundException(name)
+        # Service Unavailable
+        elif response.status_code == 503:
+            raise ServiceUnavailable()
 
     def search_manga(self, name):
         resource = 'v3/search/manga?'
@@ -127,6 +189,28 @@ class JikanGatewaysAPI(object):
             results.append(rs)
 
         return results
+
+
+    def search_person(self, name):
+        resource = 'v3/search/people?'
+
+        # traduz nosso dicionário python nos parametros de busca HTTP
+        query_string = urlencode({'q': name})
+
+        full_url = f'{self.URL}{resource}{query_string}'
+
+        print(full_url)
+
+        response = self.client.get(full_url)
+
+        # Not Found
+        if response.status_code == 404:
+            raise PersonNotFoundException(name)
+        # Service Unavailable
+        elif response.status_code == 503:
+            raise ServiceUnavailable()
+
+        return response
 
 
 class ImageViewer:
