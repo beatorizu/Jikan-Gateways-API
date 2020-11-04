@@ -40,7 +40,6 @@ class PersonNotFoundException(Exception):
         super(PersonNotFoundException, self).__init__(self.message)
 
 
-class ServiceUnavailable(Exception):
 
 
 class PersonNotFoundException(Exception):
