@@ -9,7 +9,6 @@ import numpy as np
 from matplotlib.pyplot import imshow
 from PIL import Image, ImageTk
 
-                         MangaNotFoundException, ServiceUnavailable)
 
 from controller.exceptions import (CharacterNotFoundException,
                                    AnimeNotFoundException,
