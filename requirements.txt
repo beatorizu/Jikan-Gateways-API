@@ -1,4 +1,3 @@
 coverage==4.5.1
 ipdb==0.11
 requests==2.20.0
-python-tk

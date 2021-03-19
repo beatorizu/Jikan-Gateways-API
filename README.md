@@ -2,6 +2,10 @@
 
 Mock requests calls using unittest.mock and [Jikan] REST-ful API
 
+## Environment
+
+Install `python3-tk`
+
 ## Testes
 
 ### Rodando os testes
