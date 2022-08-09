@@ -2,8 +2,6 @@ from io import BytesIO
 from tkinter import Button, Label, Tk
 from urllib.parse import urlencode
 
-from PIL import Image, ImageTk
-
 from controller.exceptions import (AnimeNotFoundException,
                                    CharacterNotFoundException,
                                    MangaNotFoundException,
@@ -206,6 +204,7 @@ class JikanGatewaysAPI(object):
 
 
 class ImageViewer:
+    ...
     def __init__(self, image, client_http):
         self.image = image
         self.client = client_http
