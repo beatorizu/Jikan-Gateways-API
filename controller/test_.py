@@ -1,16 +1,17 @@
+from unittest import mock
+
+import pytest
 import requests
-from unittest import mock, TestCase
-from controller.core import (CharacterNotFoundException,
-                             AnimeNotFoundException,
-                             SeasonNotFoundException,
-                             MangaNotFoundException,
-                             PersonNotFoundException,
-                             ServiceUnavailable,
-                             JikanGatewaysAPI)
+
+from controller.core import (AnimeNotFoundException,
+                             CharacterNotFoundException, JikanGatewaysAPI,
+                             MangaNotFoundException, PersonNotFoundException,
+                             SeasonNotFoundException, ServiceUnavailable)
 
 
-class JikanGatewaysAPITest(TestCase):
+class TestJikanGatewaysAPI:
 
+    @pytest.fixture(autouse=True)
     def setUp(self):
         # objeto Mock simulando o cliente HTTP
         self.client = mock.Mock(spec=requests)
@@ -21,7 +22,7 @@ class JikanGatewaysAPITest(TestCase):
 
         response = self.jikan_data.search_data()
 
-        self.assertEqual(200, response.status_code)
+        assert response.status_code == 200
 
     def test_search_character(self):
         # dicionário com a estrutura básica da resposta da api
@@ -40,7 +41,7 @@ class JikanGatewaysAPITest(TestCase):
 
         content = response.json()
 
-        self.assertEqual('Suguro, Ryuuji', content['result'][0]['name'])
+        assert content['result'][0]['name'] == 'Suguro, Ryuuji'
 
         # verificando a URL da chamada get
         self.client.get.assert_called_with(
@@ -56,11 +57,9 @@ class JikanGatewaysAPITest(TestCase):
         mock_response.json.return_value = json_response
         self.client.get.return_value = mock_response
 
-        with self.assertRaises(CharacterNotFoundException) as context:
+        with pytest.raises(CharacterNotFoundException) as context:
             self.jikan_data.search_character(name='Chapolin')
-
-        self.assertEqual('Character Chapolin not found.',
-                         context.exception.message)
+        assert context.value.message == 'Character Chapolin not found.'
 
     def test_search_anime(self):
         # dicionário com a estrutura básica da resposta da api
@@ -79,7 +78,7 @@ class JikanGatewaysAPITest(TestCase):
 
         content = response.json()
 
-        self.assertEqual('Redline', content['result'][0]['title'])
+        assert 'Redline' == content['result'][0]['title']
 
         # verificando a URL da chamada get
         self.client.get.assert_called_with(
@@ -95,11 +94,10 @@ class JikanGatewaysAPITest(TestCase):
         mock_response.json.return_value = json_response
         self.client.get.return_value = mock_response
 
-        with self.assertRaises(AnimeNotFoundException) as context:
+        with pytest.raises(AnimeNotFoundException) as context:
             self.jikan_data.search_anime(name='The Smurfs')
 
-        self.assertEqual('Anime The Smurfs not found.',
-                         context.exception.message)
+        assert context.value.message == 'Anime The Smurfs not found.'
 
     def test_list_anime_of_season(self):
         # dicionário com a estrutura básica da resposta da api
@@ -121,7 +119,7 @@ class JikanGatewaysAPITest(TestCase):
 
         content = response.json()
 
-        self.assertEqual('Violet Evergarden', content['anime'][0]['title'])
+        assert content['anime'][0]['title'] == 'Violet Evergarden'
 
         # verificando a URL da chamada get
         self.client.get.assert_called_with(
@@ -137,11 +135,10 @@ class JikanGatewaysAPITest(TestCase):
         mock_response.json.return_value = json_response
         self.client.get.return_value = mock_response
 
-        with self.assertRaises(SeasonNotFoundException) as context:
+        with pytest.raises(SeasonNotFoundException) as context:
             self.jikan_data.list_animes_from_season(year=2018, season=2)
 
-        self.assertEqual('Year 2018, Season 2 not found.',
-                         context.exception.message)
+        assert context.value.message == 'Year 2018, Season 2 not found.'
 
     def test_search_manga(self):
         # dicionário com a estrutura básica da resposta da api
@@ -160,7 +157,7 @@ class JikanGatewaysAPITest(TestCase):
 
         content = response.json()
 
-        self.assertEqual('Shingeki no Kyojin', content['result'][0]['title'])
+        assert content['result'][0]['title'] == 'Shingeki no Kyojin'
 
         # verificando a URL da chamada get
         self.client.get.assert_called_with(
@@ -176,11 +173,10 @@ class JikanGatewaysAPITest(TestCase):
         mock_response.json.return_value = json_response
         self.client.get.return_value = mock_response
 
-        with self.assertRaises(MangaNotFoundException) as context:
+        with pytest.raises(MangaNotFoundException) as context:
             self.jikan_data.search_manga(name='Avatar: The Last Airbender')
 
-        self.assertEqual('Manga Avatar: The Last Airbender not found.',
-                         context.exception.message)
+        assert context.value.message == 'Manga Avatar: The Last Airbender not found.'
 
     def test_search_person(self):
         # dicionário com a estrutura básica da resposta da api
@@ -199,7 +195,7 @@ class JikanGatewaysAPITest(TestCase):
 
         content = response.json()
 
-        self.assertEqual('Hayami, Show', content['result'][0]['name'])
+        assert content['result'][0]['name'] == 'Hayami, Show'
 
         # verificando a URL da chamada get
         self.client.get.assert_called_with(
@@ -215,11 +211,10 @@ class JikanGatewaysAPITest(TestCase):
         mock_response.json.return_value = json_response
         self.client.get.return_value = mock_response
 
-        with self.assertRaises(PersonNotFoundException) as context:
+        with pytest.raises(PersonNotFoundException) as context:
             self.jikan_data.search_person(name='Antonio Vivaldi')
 
-        self.assertEqual('Person Antonio Vivaldi not found.',
-                         context.exception.message)
+        assert 'Person Antonio Vivaldi not found.' == context.value.message
 
     def test_service_unavailable(self):
         json_response = {
@@ -230,8 +225,7 @@ class JikanGatewaysAPITest(TestCase):
         mock_response.json.return_value = json_response
         self.client.get.return_value = mock_response
 
-        with self.assertRaises(ServiceUnavailable) as context:
+        with pytest.raises(ServiceUnavailable) as context:
             self.jikan_data.search_character(name='Erza Scarlet')
 
-        self.assertEqual('Service Unavailable.',
-                         context.exception.message)
+        assert context.value.message == 'Service Unavailable.'
